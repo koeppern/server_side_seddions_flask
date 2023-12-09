@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask App with Session-Based List</title>
+</head>
+<body>
+    <h1>Session-Based Item List</h1>
+    <form method="post">
+        <input type="text" name="item" placeholder="Enter an item" required>
+        <button type="submit">Add</button>
+    </form>
+    <h2>Session Items:</h2>
+    <ul>
+        {% for item in items %}
+        <li>{{ item }}</li>
+        {% else %}
+        <li>No items in the list yet.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
