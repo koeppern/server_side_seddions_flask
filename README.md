@@ -210,6 +210,52 @@ curl http://localhost:5000/session
 
 This command simply accesses the `/session` endpoint, and Flask will handle it as a GET request by default. The response will contain the rendered HTML of `index_with_session.html`, including the list of items in the session.
 
+## The HTML Code Step-by-Step
+
+This HTML code is for a Flask application template that displays a session-based item list:
+
+\```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask App with Session-Based List</title>
+</head>
+<body>
+    <h1>Session-Based Item List</h1>
+    <form method="post">
+        <input type="text" name="item" placeholder="Enter an item" required>
+        <button type="submit">Add</button>
+    </form>
+    <h2>Session Items:</h2>
+    <ul>
+        {% for item in items %}
+        <li>{{ item }}</li>
+        {% else %}
+        <li>No items in the list yet.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+\```
+
+In this template:
+- The `<!DOCTYPE html>` declaration defines the document to be HTML5.
+- The `<html>` element has a `lang` attribute set to `"en"`, specifying that the content is in English.
+- The `<head>` section contains a `<meta>` tag with `charset="UTF-8"`, which specifies the character encoding for the HTML document, and a `<title>` tag.
+- The `<body>` section includes:
+  - An `<h1>` heading that titles the page as "Session-Based Item List".
+  - A `<form>` element with `method="post"` indicating that the form data will be sent to the server via POST.
+  - An `<input>` field where the user can type an item to add to the list, marked with the `required` attribute to indicate that it must be filled out before submitting the form.
+  - A `<button>` element of type `"submit"` allows the user to submit the form.
+- Below the form, an `<h2>` heading introduces the list of items.
+- The `<ul>` element contains a Jinja2 template loop:
+  - `{% for item in items %}` iterates over each `item` in the `items` list.
+  - `{{ item }}` outputs the value of each `item` inside `<li>` elements.
+  - The `{% else %}` block provides a message if the `items` list is empty, displaying "No items in the list yet."
+
+This HTML file should be saved with a `.html` extension and placed in the `templates` directory of the Flask application.
+
 ## Common Issues and Troubleshooting
 
 Throughout the development and use of this Flask application, you might encounter some common issues. Here's how to troubleshoot them:
