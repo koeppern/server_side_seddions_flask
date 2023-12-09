@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project is designed as an educational tool for understanding the basics of web development using Flask, a micro web framework written in Python. The primary focus is on demonstrating the difference between handling data in a global state accessible by all users versus using server-side sessions to maintain unique states for individual users. Through this project, students will learn about Flask routes, templates, form handling, and the concept of sessions in web applications.
+This project is designed as an educational tool for understanding the basics of server-side sessions in web development using Flask, a micro web framework written in Python. The primary focus is on demonstrating the difference between handling data in a global state accessible by all users versus using server-side sessions to maintain unique states for individual users. Through this project, you will learn about Flask routes, templates, form handling, and the concept of sessions in web applications.
 
 ## Background Information
 
@@ -81,6 +81,21 @@ Sessions play a crucial role in web applications, allowing the server to store u
 
 This session functionality demonstrates the importance of maintaining state and user-specific data in web applications, making them interactive and personalized.
 
+How a Session/a User is Identified
+Cookie Installation:
+
+When a user visits a Flask web application that uses sessions, a cookie is set in the user's browser.
+This cookie contains a unique session ID, which the server uses to recognize the user and manage session data.
+DSGVO (GDPR) Compliance Notice Requirement:
+
+Under the GDPR, websites must inform users about the use of cookies.
+This usually involves displaying a notice or banner when the user first visits the site, explaining the use of cookies and requesting consent.
+Exception for Essential Cookies:
+
+The GDPR makes an exception for cookies that are strictly necessary for the operation of the website.
+Session cookies, which are often crucial for basic website functions like user authentication or shopping carts, can fall under this category.
+For these essential cookies, user consent is not required, but users should still be informed about their use.
+
 ## Session Keys in Flask
 
 Session keys are a critical component of managing sessions securely in Flask applications. They play a vital role in ensuring the confidentiality and integrity of session data. Here's an overview of what session keys are, their importance, and how they are used in this project:
@@ -114,6 +129,86 @@ data hasn't been tampered with during client-server communication.
 - **Change Regularly**: In a production environment, it's a good practice to change the session key periodically to maintain security.
 
 By understanding and implementing session keys correctly, we enhance the security of our web application, ensuring the privacy and integrity of user data.
+
+## The app step-by-step (session-based route)
+
+```python
+from flask import Flask, render_template, request, redirect, url_for, session
+
+app = Flask(__name__)
+app.secret_key = "your_secret_key"  # Replace with a real secret key
+
+# Shared list for non-session demonstration
+items = []
+
+@app.route("/session", methods=["GET", "POST"])
+def session_index():
+    if 'items' not in session:
+        session['items'] = []
+
+    if request.method == "POST":
+        item = request.form.get("item")
+        session['items'].append(item)
+        session.modified = True
+        return redirect(url_for("session_index"))
+
+    return render_template("index_with_session.html", items=session['items'])
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', debug=True)
+```
+This Flask application demonstrates two different methods of state management: non-session based and session-based. Let's break down the session-based part of the code step-by-step:
+
+1. **Importing Flask Modules**:
+   - `from flask import Flask, render_template, request, redirect, url_for, session`: These statements import necessary modules from the Flask framework. `Flask` is used to create the app, `render_template` to render HTML templates, `request` to handle requests, `redirect` and `url_for` for redirection, and `session` for session management.
+
+2. **Initializing the Flask Application**:
+   - `app = Flask(__name__)`: This line initializes a new Flask web application.
+   - `app.secret_key = "your_secret_key"`: Sets the secret key for the application, which is used for securely signing the session cookie.
+
+3. **Defining the `/session` Route**:
+   - `@app.route("/session", methods=["GET", "POST"])`: This decorator defines a route for the URL `/session`. It accepts both GET and POST requests.
+
+4. **Session-Based List Management**:
+   - `if 'items' not in session: session['items'] = []`: This checks if the key `'items'` exists in the session. If it does not, it initializes an empty list under this key. This list is unique to each user session.
+   - `if request.method == "POST":`: This checks if the current request is a POST request, which indicates that the user has submitted data (in this case, an item to add to the list).
+     - `item = request.form.get("item")`: Retrieves the item from the submitted form data.
+     - `session['items'].append(item)`: Adds the retrieved item to the session-specific list.
+     - `session.modified = True`: Marks the session as modified, ensuring that it's saved.
+     - `return redirect(url_for("session_index"))`: Redirects the user back to the `/session` route, which helps in preventing duplicate submissions if the user refreshes the page.
+
+5. **Rendering the Template**:
+   - `return render_template("index_with_session.html", items=session['items'])`: This renders the `index_with_session.html` template, passing the session-specific list of items to the template. This allows the template to display the items that have been added to the session.
+
+6. **Running the Application**:
+   - `if __name__ == "__main__": app.run(host='0.0.0.0', debug=True)`: This part of the code runs the Flask application. The `host='0.0.0.0'` makes the server externally visible (accessible from any device on the network), and `debug=True` enables the debug mode, which provides useful debug information if there's an error and allows for automatic reloading of the server on code changes.
+
+In summary, this section of the Flask application demonstrates how to implement session-based state management, where each user gets their individual list that persists across their session, showcasing the ability to maintain isolated state per user in a web application.
+
+## Accessing the Endpoint `/session` Using `curl`
+
+### Post
+
+To add an item, such as "my new element", to the session list via a POST request, you can use the following `curl` command. This command simulates a form submission:
+
+```bash
+curl -X POST -d "item=my new element" http://localhost:5000/session
+```
+
+In this command:
+- `-X POST` specifies that this is a POST request.
+- `-d "item=my new element"` sends the data as if it was submitted from a form, with `item` being the field name and `"my new element"` the value.
+- `http://localhost:5000/session` is the URL of the endpoint. This URL might differ depending on your server's configuration.
+
+### Get
+
+To retrieve the current state of the session list (which should now include "my new element" if the POST request was successful), you can use a GET request:
+
+```bash
+curl http://localhost:5000/session
+```
+
+This command simply accesses the `/session` endpoint, and Flask will handle it as a GET request by default. The response will contain the rendered HTML of `index_with_session.html`, including the list of items in the session.
 
 ## Common Issues and Troubleshooting
 
