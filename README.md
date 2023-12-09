@@ -214,7 +214,7 @@ This command simply accesses the `/session` endpoint, and Flask will handle it a
 
 This HTML code is for a Flask application template that displays a session-based item list:
 
-\```html
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -237,7 +237,7 @@ This HTML code is for a Flask application template that displays a session-based
     </ul>
 </body>
 </html>
-\```
+```
 
 In this template:
 - The `<!DOCTYPE html>` declaration defines the document to be HTML5.
